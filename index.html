@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrickRate - Construction Cost Estimator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</head>
+<body>
+    <!-- Construction Site Background Image -->
+    <div class="background-container">
+        <div class="background-overlay"></div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="login-page" id="loginPage">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1 class="login-logo">🏗️ BrickRate</h1>
+                    <p class="login-subtitle">Professional Construction Cost Estimation</p>
+                </div>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="fullName">Full Name *</label>
+                        <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address *</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter your email address" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Phone Number *</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password *</label>
+                        <input type="password" class="form-control" id="password" placeholder="Enter password (min 8 characters)" minlength="8" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn--primary btn--full-width login-btn">
+                        <span class="btn-text">Access Calculator</span>
+                        <div class="btn-loader hidden"></div>
+                    </button>
+                </form>
+                
+                <div class="login-features">
+                    <h4>What you'll get:</h4>
+                    <ul>
+                        <li>✅ Real-time cost calculations</li>
+                        <li>✅ Material company comparisons</li>
+                        <li>✅ Email detailed reports</li>
+                        <li>✅ 300+ Indian cities coverage</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="main-app hidden" id="mainApp">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <div class="header__brand">
+                        <h1 class="header__logo">🏗️ BrickRate</h1>
+                        <p class="header__tagline">Professional Construction Cost Estimation</p>
+                    </div>
+                    <div class="header__user">
+                        <div class="user-info">
+                            <span class="user-name" id="userName">Welcome!</span>
+                            <button class="btn btn--outline btn--sm" id="logoutBtn">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <div class="calculator-section" id="calculator">
+                    <div class="calculator-grid">
+                        <!-- Input Panel -->
+                        <div class="calculator-panel">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h2>Project Details</h2>
+                                    <p>Enter your construction requirements</p>
+                                </div>
+                                <div class="card__body">
+                                    <form class="calculator-form" id="calculatorForm">
+                                        <!-- Plot Dimensions -->
+                                        <div class="form-section">
+                                            <h3 class="form-section__title">Plot Dimensions</h3>
+                                            <div class="form-group">
+                                                <div class="dimension-toggle">
+                                                    <button type="button" class="btn btn--sm toggle-btn active" data-mode="dimensions">Length × Width</button>
+                                                    <button type="button" class="btn btn--sm toggle-btn" data-mode="area">Total Area</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="dimension-inputs" id="dimensionInputs">
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="length">Length (ft)</label>
+                                                        <input type="number" class="form-control" id="length" placeholder="Enter length" min="10" max="200">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="width">Width (ft)</label>
+                                                        <input type="number" class="form-control" id="width" placeholder="Enter width" min="10" max="200">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="area-input hidden" id="areaInput">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="totalArea">Total Area (sq ft)</label>
+                                                    <input type="number" class="form-control" id="totalArea" placeholder="Enter total area" min="400" max="5000">
+                                                </div>
+                                            </div>
+
+                                            <div class="calculated-area" id="calculatedArea">
+                                                <span class="area-display">Total Area: <strong>0 sq ft</strong></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Location & Type -->
+                                        <div class="form-section">
+                                            <h3 class="form-section__title">Location & Type</h3>
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="citySearch">City</label>
+                                                    <div class="search-container">
+                                                        <input type="text" class="form-control search-input" id="citySearch" placeholder="Search city (e.g., Puducherry)..." autocomplete="off">
+                                                        <div class="search-dropdown hidden" id="cityDropdown"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label" for="houseType">House Type</label>
+                                                    <select class="form-control" id="houseType" required>
+                                                        <option value="">Select type</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quality Level -->
+                                        <div class="form-section">
+                                            <h3 class="form-section__title">Construction Quality</h3>
+                                            <div class="quality-selector">
+                                                <div class="quality-option" data-quality="basic">
+                                                    <div class="quality-header">
+                                                        <h4>Basic</h4>
+                                                        <span class="quality-price">₹1,200-1,800/sq ft</span>
+                                                    </div>
+                                                    <p>Standard materials, basic finishes</p>
+                                                </div>
+                                                <div class="quality-option" data-quality="standard">
+                                                    <div class="quality-header">
+                                                        <h4>Standard</h4>
+                                                        <span class="quality-price">₹1,600-2,400/sq ft</span>
+                                                    </div>
+                                                    <p>Good quality materials, modern finishes</p>
+                                                </div>
+                                                <div class="quality-option" data-quality="premium">
+                                                    <div class="quality-header">
+                                                        <h4>Premium</h4>
+                                                        <span class="quality-price">₹2,000-4,000/sq ft</span>
+                                                    </div>
+                                                    <p>High-end materials, luxury finishes</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Panel -->
+                        <div class="results-panel">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h2>Cost Estimate</h2>
+                                    <p>Live calculation based on your inputs</p>
+                                </div>
+                                <div class="card__body">
+                                    <div class="estimate-summary" id="estimateSummary">
+                                        <div class="total-cost">
+                                            <span class="cost-label">Total Estimated Cost</span>
+                                            <span class="cost-amount" id="totalCost">₹0</span>
+                                        </div>
+                                        <div class="cost-per-sqft">
+                                            <span class="cost-label">Cost per sq ft</span>
+                                            <span class="cost-amount" id="costPerSqft">₹0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="cost-breakdown" id="costBreakdown">
+                                        <h3>Cost Breakdown</h3>
+                                        <div class="breakdown-chart">
+                                            <canvas id="breakdownChart" width="300" height="200"></canvas>
+                                        </div>
+                                        
+                                        <div class="breakdown-details">
+                                            <div class="breakdown-item">
+                                                <span class="breakdown-label">Materials (55%)</span>
+                                                <span class="breakdown-amount" id="materialsAmount">₹0</span>
+                                            </div>
+                                            <div class="breakdown-item">
+                                                <span class="breakdown-label">Labor (30%)</span>
+                                                <span class="breakdown-amount" id="laborAmount">₹0</span>
+                                            </div>
+                                            <div class="breakdown-item">
+                                                <span class="breakdown-label">Architect Fees (8%)</span>
+                                                <span class="breakdown-amount" id="architectAmount">₹0</span>
+                                            </div>
+                                            <div class="breakdown-item">
+                                                <span class="breakdown-label">Miscellaneous (7%)</span>
+                                                <span class="breakdown-amount" id="miscAmount">₹0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="material-companies" id="materialCompanies">
+                                        <h3>Material Companies & Pricing</h3>
+                                        <div class="company-tabs">
+                                            <button class="company-tab active" data-material="cement">Cement</button>
+                                            <button class="company-tab" data-material="steel">Steel</button>
+                                            <button class="company-tab" data-material="bricks">Bricks</button>
+                                        </div>
+                                        <div class="company-content" id="companyContent">
+                                            <!-- Company content will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+
+                                    <div class="action-buttons">
+                                        <button class="btn btn--primary btn--full-width email-btn" id="emailEstimate">
+                                            <span class="btn-text">📧 Email Detailed Report</span>
+                                            <div class="btn-loader hidden"></div>
+                                        </button>
+                                        <div class="button-row">
+                                            <button class="btn btn--secondary" id="shareEstimate">
+                                                📤 Share Estimate
+                                            </button>
+                                            <button class="btn btn--secondary" id="saveQuote">
+                                                💾 Save Quote
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>About BrickRate</h3>
+                        <p>BrickRate provides accurate, real-time construction cost estimates for all Indian cities. Our advanced algorithms consider local material costs, company pricing, labor rates, and market conditions.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Contact Information</h3>
+                        <p>📧 info@brickrate.com</p>
+                        <p>📞 +91 98765 43210</p>
+                        <p>🌐 www.brickrate.com</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Disclaimer</h3>
+                        <p>Cost estimates are approximate and based on current market rates. Actual costs may vary based on specific requirements, local conditions, and market fluctuations.</p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 BrickRate. Made with ❤️ for Indian builders and homeowners.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
